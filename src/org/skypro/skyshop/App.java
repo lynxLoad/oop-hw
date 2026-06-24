@@ -5,6 +5,8 @@ import org.skypro.skyshop.product.SimpleProduct;
 import org.skypro.skyshop.product.DiscountedProduct;
 import org.skypro.skyshop.product.FixPriceProduct;
 import org.skypro.skyshop.basket.ProductBasket;
+import org.skypro.skyshop.article.Article;
+import org.skypro.skyshop.engine.SearchEngine;
 
 public class App {
     public static void main(String[] args) {
@@ -59,5 +61,68 @@ public class App {
         System.out.println("\n=== Поиск товара по имени в пустой корзине ===");
         boolean found3 = basket.checkProduct("Яблоко");
         System.out.println("Товар 'Яблоко' найден в пустой корзине? " + found3);
+
+        SearchEngine searchEngine = new SearchEngine(10);
+
+        System.out.println("\n=== Добавление товаров в поисковый движок ===");
+        searchEngine.add(apple);
+        System.out.println("Добавлен: " + apple.getStringRepresentation());
+        searchEngine.add(bread);
+        System.out.println("Добавлен: " + bread.getStringRepresentation());
+        searchEngine.add(milk);
+        System.out.println("Добавлен: " + milk.getStringRepresentation());
+        searchEngine.add(cheese);
+        System.out.println("Добавлен: " + cheese.getStringRepresentation());
+        searchEngine.add(juice);
+        System.out.println("Добавлен: " + juice.getStringRepresentation());
+        searchEngine.add(extraProduct);
+        System.out.println("Добавлен: " + extraProduct.getStringRepresentation());
+
+        System.out.println("\n=== Добавление статей в поисковый движок ===");
+        Article article1 = new Article("Как выбрать яблоки", "Статья о том, как правильно выбирать свежие яблоки в магазине");
+        Article article2 = new Article("Польза молока", "Молоко содержит кальций и полезно для костей");
+        Article article3 = new Article("Рецепт яблочного сока", "Как приготовить свежий яблочный сок в домашних условиях");
+
+
+        searchEngine.add(article1);
+        System.out.println("Добавлена статья: " + article1.getName());
+        searchEngine.add(article2);
+        System.out.println("Добавлена статья: " + article2.getName());
+        searchEngine.add(article3);
+        System.out.println("Добавлена статья: " + article3.getName());
+
+        System.out.println("\n=== Поиск ===");
+        Searchable[] results1 = searchEngine.search("яблоко");
+        printSearchResults(results1);
+
+        Searchable[] results2 = searchEngine.search("молоко");
+        printSearchResults(results2);
+
+        Searchable[] results3 = searchEngine.search("сок");
+        printSearchResults(results3);
+
+        Searchable[] results4 = searchEngine.search("хлеб");
+        printSearchResults(results4);
+
+        Searchable[] results5 = searchEngine.search("шоколад");
+        printSearchResults(results5);
+
+        Searchable[] results6 = searchEngine.search("как");
+        printSearchResults(results6);
+    }
+
+    private static void printSearchResults(Searchable[] results) {
+        int foundCount = 0;
+        for (Searchable item : results) {
+            if (item != null) {
+                foundCount++;
+                System.out.println("Найдено: " + item.getStringRepresentation());
+            }
+        }
+        if (foundCount == 0) {
+            System.out.println("Ничего не найдено.");
+        } else {
+            System.out.println("Всего найдено: " + foundCount);
+        }
     }
 }
