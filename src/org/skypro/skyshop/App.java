@@ -1,5 +1,6 @@
 package org.skypro.skyshop;
 
+import org.skypro.skyshop.exception.BestResultNotFound;
 import org.skypro.skyshop.product.Product;
 import org.skypro.skyshop.product.SimpleProduct;
 import org.skypro.skyshop.product.DiscountedProduct;
@@ -9,7 +10,7 @@ import org.skypro.skyshop.article.Article;
 import org.skypro.skyshop.engine.SearchEngine;
 
 public class App {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws BestResultNotFound {
         Product apple = new SimpleProduct("Яблоко", 50);
         Product bread = new SimpleProduct("Хлеб", 35);
         Product milk = new DiscountedProduct("Молоко", 80, 15);  // скидка 15%
@@ -83,7 +84,6 @@ public class App {
         Article article2 = new Article("Польза молока", "Молоко содержит кальций и полезно для костей");
         Article article3 = new Article("Рецепт яблочного сока", "Как приготовить свежий яблочный сок в домашних условиях");
 
-
         searchEngine.add(article1);
         System.out.println("Добавлена статья: " + article1.getName());
         searchEngine.add(article2);
@@ -109,6 +109,53 @@ public class App {
 
         Searchable[] results6 = searchEngine.search("как");
         printSearchResults(results6);
+
+        System.out.println("\n=== Создание некорректных товаров ===");
+        try {
+            SimpleProduct emptyProduct = new SimpleProduct("   ", 100);
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
+        }
+
+        try {
+            SimpleProduct freeBeer = new SimpleProduct("Бесплатное пиво", 0);
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
+        }
+
+        try {
+            DiscountedProduct croutons = new DiscountedProduct("Сухарики", 0, 101);
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
+        }
+
+        try {
+            DiscountedProduct chips = new DiscountedProduct("Чипсы", 74, 101);
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
+        }
+
+        try {
+            FixPriceProduct invalidFix = new FixPriceProduct(null);
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
+        }
+
+        System.out.println("\n=== Поиск наиболее подходящего товара ===");
+
+        try {
+            Searchable bestMatch = searchEngine.searchMostSuitable("яблоко");
+            System.out.println("Наиболее подходящий: " + bestMatch.getStringRepresentation());
+        } catch (BestResultNotFound e) {
+            System.out.println(e.getMessage());
+        }
+
+        try {
+            Searchable notFound = searchEngine.searchMostSuitable("ананас");
+            System.out.println(notFound);
+        } catch (BestResultNotFound e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     private static void printSearchResults(Searchable[] results) {
